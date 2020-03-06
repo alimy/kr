@@ -1,0 +1,90 @@
+package zimlet
+
+import (
+	"sync"
+
+	"{{.PkgName}}/cmd/core"
+	"{{.PkgName}}/internal/config"
+	"{{.PkgName}}/servants/agent"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+)
+
+var (
+	agentAddr        string
+	agentPort        uint16
+	agentInWebsocket bool
+)
+
+func init() {
+	agentCmd := &cobra.Command{
+		Use:   "agent",
+		Short: "zim-ss agent service",
+		Long:  "this cmd will start a agent to provide IM service",
+		Run:   agentRun,
+	}
+	// parse flags for agentCmd
+	agentCmd.Flags().BoolVar(&inDebug, "debug", false, "whether in debug mode")
+	agentCmd.Flags().StringVarP(&inConfigFile, "config", "c", "", "custom config file path used to init application")
+	agentCmd.Flags().StringVarP(&agentAddr, "addr", "a", "", "service listen address")
+	agentCmd.Flags().Uint16VarP(&agentPort, "port", "p", 0, "port for listen")
+	agentCmd.Flags().BoolVar(&agentInWebsocket, "ws", false, "whether use websocket serve connect")
+	// register agentCmd as sub-command
+	core.Register(agentCmd)
+}
+
+func agentRun(cmd *cobra.Command, args []string) {
+	inSetup()
+	conf := agentSetup()
+	logrus.Infof("start with config:%s", conf)
+	coreInit(conf)
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+	if agentInWebsocket {
+		go agentWebServe(conf, wg)
+	} else {
+		go agentServe(conf, wg)
+	}
+	go agentWardsServe(conf, wg)
+	wg.Wait()
+}
+
+func agentSetup() *config.Config {
+	conf := config.InitWith(inConfigFile)
+	var agentConf config.AgentConfig
+	if agentInWebsocket {
+		agentConf = &conf.AgentWeb
+	} else {
+		agentConf = &conf.Agent
+	}
+	agentConf.SetAddrPort(agentAddr, agentPort)
+	return conf
+}
+
+func agentServe(conf *config.Config, wg *sync.WaitGroup) {
+	// 初始化service
+	service := agent.NewImAgent(agent.CrateBufCapOpt(16))
+	// 开始服务
+	if err := service.Serve(); err != nil {
+		logrus.Errorf("start agent service failure: %s", err)
+	}
+	wg.Done()
+}
+
+func agentWebServe(conf *config.Config, wg *sync.WaitGroup) {
+	// 初始化service
+	service := agent.NewImAgentWs(agent.CrateBufCapOpt(16))
+	// 开始服务
+	if err := service.Serve(); err != nil {
+		logrus.Errorf("start agent for websocket service failure: %s", err)
+	}
+	wg.Done()
+}
+
+func agentWardsServe(conf *config.Config, wg *sync.WaitGroup) {
+	service := agent.NewImAgentWards(conf)
+	if err := service.Serve(); err != nil {
+		logrus.Errorf("start agent wards service failure: %s", err)
+	}
+	wg.Done()
+}

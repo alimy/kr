@@ -1,0 +1,50 @@
+package business
+
+import (
+	"fmt"
+	"net"
+
+	"{{.PkgName}}/core/models"
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/insecure"
+	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
+	admin "{{.PkgName}}/core/proto/gen/admin/v1"
+)
+
+var (
+	_ servant.ImBisAdmin = newBisAdmin("80")
+)
+
+// bisAdmin 内部管理业务
+type bisAdmin struct {
+	admin.ImBisAdminServer
+	addr string
+}
+
+// bisAdmin 开始服务
+func (a *bisAdmin) Serve() error {
+	logrus.Info("internal admin service starting")
+	l, err := net.Listen("tcp", a.addr)
+	if err != nil {
+		return fmt.Errorf("failed to listen: %w", err)
+	}
+	s := grpc.NewServer(
+		grpc.Creds(credentials.NewServerTLSFromCert(&insecure.Cert)),
+	)
+	admin.RegisterImBisAdminServer(s, a)
+	logrus.Infof("internal admin listen in %s", a.addr)
+	if err := s.Serve(l); err != nil {
+		return fmt.Errorf("%s: %w", models.SvcErrUnready, err)
+	}
+	return nil
+}
+
+func newBisAdmin(addr string) *bisAdmin {
+	return &bisAdmin{
+		ImBisAdminServer: newAdminHandler(),
+		addr:             addr,
+	}
+}

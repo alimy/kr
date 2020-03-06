@@ -1,0 +1,25 @@
+package agent
+
+import (
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/config"
+
+	agent "{{.PkgName}}/core/proto/gen/agent/v1"
+)
+
+var (
+	_ servant.ImAgentWards = &imAgentWards{}
+)
+
+type imAgentWards struct {
+	agent.ImAgentWardsServer
+	addr string
+}
+
+// NewImAgentWards ImAgentWards新实例
+func NewImAgentWards(conf *config.Config) servant.ImAgentWards {
+	return &imAgentWards{
+		ImAgentWardsServer: newWardsHandler(),
+		addr:               conf.AgentWards.Addr,
+	}
+}

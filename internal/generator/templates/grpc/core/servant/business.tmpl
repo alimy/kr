@@ -1,0 +1,15 @@
+package servant
+
+import "{{.PkgName}}/core/models"
+
+// ImBisAffairs 外部服务业务额外接口
+type ImBisAffairs interface {
+	models.Service
+	// TODO
+}
+
+// ImBisAdmin 内部管理业务额外接口
+type ImBisAdmin interface {
+	models.Service
+	// TODO
+}

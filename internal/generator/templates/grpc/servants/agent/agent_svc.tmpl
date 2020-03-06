@@ -1,0 +1,13 @@
+package agent
+
+import (
+	"{{.PkgName}}/core/models"
+	"github.com/sirupsen/logrus"
+)
+
+// Serve 开始接客了
+func (im *imAgent) Serve() error {
+	// TODO
+	logrus.Info("start im agent service")
+	return models.SvcErrUnready
+}

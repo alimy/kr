@@ -1,0 +1,34 @@
+package agent
+
+import (
+	"context"
+
+	"{{.PkgName}}/core/models"
+	"github.com/gogo/protobuf/types"
+
+	agent "{{.PkgName}}/core/proto/gen/agent/v1"
+)
+
+var (
+	_ agent.ImAgentWardsServer = newWardsHandler()
+)
+
+type wardsHandler struct {
+	// TODO: wardsHandler
+}
+
+func newWardsHandler() *wardsHandler {
+	return &wardsHandler{}
+}
+
+// AddConversaMembers Add conversa members
+func (h *wardsHandler) AddConversaMembers(c context.Context, member *agent.ConversaMember) (*types.Empty, error) {
+	// TODO: AddConversaMembers
+	return nil, models.SvcErrUnready
+}
+
+// DelConversaMembers Delete conversa members
+func (h *wardsHandler) DelConversaMembers(c context.Context, member *agent.ConversaMember) (*types.Empty, error) {
+	// TODO: DelConversaMembers
+	return nil, models.SvcErrUnready
+}

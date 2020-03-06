@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package imbis.affairs.v1;
+
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+option go_package = "{{.PkgName}}/core/proto/gen/affairs/v1;affairs";
+
+// 会话信息
+message ConversaInfo {
+    int64 conversa_id = 1;
+}
+
+// 请求会话列表参数
+message ListConversaInfoReq {
+    // 用户id
+    int32 uid = 1 [(validator.field) = {int_gt: 0 human_error: "id must a positive integer"}];
+}
+
+// 响应会话列表数据
+message ListConversaInfoRes {
+    // 会话信息列表
+    repeated ConversaInfo conversas = 1;
+}

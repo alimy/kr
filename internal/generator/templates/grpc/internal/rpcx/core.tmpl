@@ -1,0 +1,11 @@
+package rpcx
+
+import "github.com/sirupsen/logrus"
+
+// RxLog rpc log info
+type RxLog string
+
+// CallInfo print call info
+func (l RxLog) LogCallInfo(method string, args interface{}) {
+	logrus.Debugf("call %s.%s(%v)", l, method, args)
+}

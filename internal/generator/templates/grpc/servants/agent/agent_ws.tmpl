@@ -1,0 +1,23 @@
+package agent
+
+import "{{.PkgName}}/core/servant"
+
+// imAgentWs 接入层服务websocket
+type imAgentWs struct {
+	imAgent
+	// TODO: imAgent
+}
+
+// NewImAgent 获取servant.ImAgentWs实例
+func NewImAgentWs(opts ...ImAgentOpt) servant.ImAgentWs {
+	agent := &imAgentWs{
+		imAgent{
+			agentConfig{},
+		},
+	}
+	config := &agent.agentConfig
+	for _, opt := range opts {
+		opt.apply(config)
+	}
+	return agent
+}

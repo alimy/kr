@@ -1,0 +1,23 @@
+package main
+
+import (
+    "log"
+
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    e := gin.New()
+
+    // register servants to engine
+    registerServants(e)
+
+    // start servant service
+    if err := e.Run(); err != nil {
+        log.Fatal(err)
+    }
+}
+
+func registerServants(e *gin.Engine) {
+    // TODO: register routes to *gin.Engine
+}

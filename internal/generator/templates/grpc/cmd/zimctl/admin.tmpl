@@ -1,0 +1,31 @@
+package zimctl
+
+import (
+	"{{.PkgName}}/cmd/core"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+)
+
+func init() {
+	adminCmd := &cobra.Command{
+		Use:   "admin",
+		Short: "zimctl admin cli",
+		Long:  "zimctl admin cli",
+		Run:   adminRun,
+	}
+	// parse flags for adminCmd
+	adminCmd.Flags().BoolVar(&inDebug, "debug", false, "whether in debug mode")
+	// register adminCmd as sub-command
+	core.Register(adminCmd)
+}
+
+func adminRun(cmd *cobra.Command, args []string) {
+	inSetup()
+	adminSetup()
+	logrus.Info("admin start with config")
+	// TODO: some other logic
+}
+
+func adminSetup() {
+	// TODO: some setup for admin
+}

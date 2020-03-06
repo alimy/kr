@@ -1,0 +1,70 @@
+package business
+
+import (
+	"fmt"
+	"net"
+
+	"{{.PkgName}}/core/models"
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/insecure"
+	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
+	affairs "{{.PkgName}}/core/proto/gen/affairs/v1"
+)
+
+var (
+	_ servant.ImBisAffairs = newBisAffairs("80")
+)
+
+// bisAffairs 外部业务
+type bisAffairs struct {
+	affairs.ImBisAffairsServer
+	addr string
+}
+
+// bisAffairsWeb 外部业务web environment
+type bisAffairsWeb struct {
+	affairs.ImBisAffairsServer
+	addr string
+}
+
+// Serve 开始服务
+func (a *bisAffairs) Serve() error {
+	logrus.Info("external affairs service starting")
+	l, err := net.Listen("tcp", a.addr)
+	if err != nil {
+		return fmt.Errorf("failed to listen: %w", err)
+	}
+	s := grpc.NewServer(
+		grpc.Creds(credentials.NewServerTLSFromCert(&insecure.Cert)),
+	)
+	affairs.RegisterImBisAffairsServer(s, a)
+	logrus.Infof("external affairs listen in %s", a.addr)
+	if err := s.Serve(l); err != nil {
+		return fmt.Errorf("%s: %w", models.SvcErrUnready, err)
+	}
+	return nil
+}
+
+// Serve 开始服务
+func (a *bisAffairsWeb) Serve() error {
+	logrus.Info("external affairs service for web environment starting")
+	logrus.Infof("prepare listen in %s", a.addr)
+	return models.SvcErrUnready
+}
+
+func newBisAffairs(addr string) *bisAffairs {
+	return &bisAffairs{
+		ImBisAffairsServer: newAffairsHandler(),
+		addr:               addr,
+	}
+}
+
+func newBisAffairsWeb(addr string) *bisAffairsWeb {
+	return &bisAffairsWeb{
+		ImBisAffairsServer: newAffairsHandler(),
+		addr:               addr,
+	}
+}

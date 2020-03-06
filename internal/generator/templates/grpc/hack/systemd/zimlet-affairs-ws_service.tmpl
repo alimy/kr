@@ -1,0 +1,24 @@
+[Unit]
+Description=zim-ss ImBis External Affairs service for web environment use grpc-gateway
+After=syslog.target
+After=network.target
+#After=mariadb.service mysqld.service redis.service
+
+[Service]
+#LimitMEMLOCK=infinity
+LimitNOFILE=65535
+Type=simple
+WorkingDirectory=/srv/zim-ss
+ExecStart=/srv/zim-ss/zimlet affairs --ws -c /srv/zim-ss/config/app.toml
+Restart=always
+
+# Some distributions may not support these hardening directives. If you cannot start the service due
+# to an unknown option, comment out the ones not supported by your version of systemd.
+ProtectSystem=full
+PrivateDevices=yes
+PrivateTmp=yes
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
+

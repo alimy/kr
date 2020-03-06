@@ -1,0 +1,16 @@
+package zimctl
+
+import "{{.PkgName}}/internal/logus"
+
+var (
+	inDebug bool
+)
+
+// inSetup 通用设置
+func inSetup() {
+	if inDebug {
+		logus.SetLevel(logus.LevelDebug)
+	} else {
+		logus.SetLevel(logus.LevelInfo)
+	}
+}

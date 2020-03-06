@@ -1,0 +1,23 @@
+package share
+
+import (
+	"sync"
+
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/config"
+	"{{.PkgName}}/servants/dataware"
+)
+
+var (
+	// DefaultDw 默认全局Dataware
+	DefaultDw servant.Dataware
+
+	initOnce = &sync.Once{}
+)
+
+// Init 初始化Dataware
+func Init(conf *config.Config) {
+	initOnce.Do(func() {
+		DefaultDw = dataware.NewDataware(conf)
+	})
+}

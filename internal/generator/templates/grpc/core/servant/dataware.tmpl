@@ -1,0 +1,26 @@
+package servant
+
+import "{{.PkgName}}/core/models"
+
+// Dataware 数据仓储服务接口
+type Dataware interface {
+	PushMsgDw
+	MetricsDw
+}
+
+// PushMsgDw 推送消息数据接口
+type PushMsgDw interface {
+	// TODO
+}
+
+// MetricsDw 监控状态数据接口
+type MetricsDw interface {
+	// UserLoginInfos 获取用户在线信息
+	UserLoginInfos([]int32) []*models.LoginMetric
+
+	// UserLoginMc 用户登录成功监控指标
+	UserLoginMc(uid int32)
+
+	// UserLogoutMc 用户注销监控指标
+	UserLogoutMc(uid int32, cause models.LogoutCause)
+}

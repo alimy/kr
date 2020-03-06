@@ -1,0 +1,47 @@
+package zimlet
+
+import (
+	"{{.PkgName}}/cmd/core"
+	"{{.PkgName}}/internal/config"
+	"{{.PkgName}}/servants/business"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+)
+
+var (
+	adminAddr string
+)
+
+func init() {
+	adminCmd := &cobra.Command{
+		Use:   "admin",
+		Short: "zim-ss internal admin service",
+		Long:  "zim-ss internal admin service",
+		Run:   adminRun,
+	}
+	// parse flags for adminCmd
+	adminCmd.Flags().BoolVar(&inDebug, "debug", false, "whether in debug mode")
+	adminCmd.Flags().StringVarP(&inConfigFile, "config", "c", "", "custom config file path used to init application")
+	adminCmd.Flags().StringVarP(&adminAddr, "addr", "a", "", "service listen address")
+	// register adminCmd as sub-command
+	core.Register(adminCmd)
+}
+
+func adminRun(cmd *cobra.Command, args []string) {
+	inSetup()
+	conf := adminSetup()
+	logrus.Infof("start with config:%s", conf)
+	coreInit(conf)
+	service := business.NewImBisAdmin(conf)
+	if err := service.Serve(); err != nil {
+		logrus.Errorf("start internal admin service failure: %s", err)
+	}
+}
+
+func adminSetup() *config.Config {
+	conf := config.InitWith(inConfigFile)
+	if adminAddr != "" {
+		conf.InternalAdmin.Addr = adminAddr
+	}
+	return conf
+}

@@ -1,0 +1,13 @@
+package models
+
+import "errors"
+
+// Service统一错误信息
+var (
+	SvcErrUnready = errors.New("service is not ready")
+)
+
+// Service 通用服务接口
+type Service interface {
+	Serve() error
+}

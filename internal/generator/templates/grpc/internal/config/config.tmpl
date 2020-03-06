@@ -1,0 +1,188 @@
+package config
+
+import (
+	"os"
+
+	"github.com/BurntSushi/toml"
+	"{{.PkgName}}/internal/assets"
+	"github.com/sirupsen/logrus"
+)
+
+var (
+	config *Config
+)
+
+// AgentConfig Agent config
+type AgentConfig interface {
+	SetAddrPort(addr string, port uint16)
+	SetAddr(addr string)
+	SetPort(port uint16)
+	AgentAddr() string
+}
+
+// InitWith initialize models with custom config file
+func InitWith(path string) *Config {
+	config = &Config{}
+	// init config
+	if err := loadConfig(config); err != nil {
+		logrus.Error("load config error", err)
+	}
+	if path == "" {
+		// Empty
+	} else if fileIsExist(path) { // set config from custom config file
+		customConfig(config, path)
+	} else {
+		logrus.Infof("custom config file is not exist so use default config path: %s", path)
+	}
+	return config
+}
+
+// MyConfig return application's config
+func MyConfig() *Config {
+	return config
+}
+
+// fileIsExist checks whether a file or directory exists.
+// It returns false when the file or directory does not exist.
+func fileIsExist(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil || os.IsExist(err)
+}
+
+func loadConfig(config *Config) error {
+	data := assets.MustAsset("config/app.toml")
+	_, err := toml.Decode(string(data), config)
+	return err
+}
+
+func customConfig(config *Config, path string) {
+	customConfig := &Config{}
+	meta, err := toml.DecodeFile(path, customConfig)
+	if err != nil {
+		logrus.Errorf("decode custom config error %v", err)
+		return
+	}
+	for _, key := range meta.Keys() {
+		if len(key) == 1 { // top section just continue
+			continue
+		}
+		switch key[0] {
+		case "application":
+			myAppSection(config, customConfig, key)
+		case "agent":
+			myAgentSection(config, customConfig, key)
+		case "agent_web":
+			myAgentWebSection(config, customConfig, key)
+		case "agent_wards":
+			myAgentWardsSection(config, customConfig, key)
+		case "im_titoli":
+			myImTitoliSection(config, customConfig, key)
+		case "internal_admin":
+			myInternalAdminSection(config, customConfig, key)
+		case "external_affairs":
+			myExternalAffairsSection(config, customConfig, key)
+		case "mongodb":
+			myMongoDBSection(config, customConfig, key)
+		case "redis":
+			myRedisSection(config, customConfig, key)
+		case "develop":
+			myDevelopSection(config, customConfig, key)
+		}
+	}
+}
+
+func myAppSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "name":
+		config.Application.Name = custom.Application.Name
+	case "version":
+		config.Application.Version = custom.Application.Version
+	case "authors":
+		config.Application.Authors = custom.Application.Authors
+	case "description":
+		config.Application.Description = custom.Application.Description
+	}
+}
+
+func myAgentSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "addr":
+		config.Agent.Addr = custom.Agent.Addr
+	case "port":
+		config.Agent.Port = custom.Agent.Port
+	}
+}
+
+func myAgentWebSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "addr":
+		config.AgentWeb.Addr = custom.AgentWeb.Addr
+	case "port":
+		config.AgentWeb.Port = custom.AgentWeb.Port
+	}
+}
+
+func myAgentWardsSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "addr":
+		config.AgentWards.Addr = custom.AgentWards.Addr
+	}
+}
+
+func myImTitoliSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "addr":
+		config.ImTitoli.Addr = custom.ImTitoli.Addr
+	}
+}
+
+func myInternalAdminSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "addr":
+		config.InternalAdmin.Addr = custom.InternalAdmin.Addr
+	}
+}
+
+func myExternalAffairsSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "addr":
+		config.ExternalAffairs.Addr = custom.ExternalAffairs.Addr
+	case "web_addr":
+		config.ExternalAffairs.WebAddr = custom.ExternalAffairs.WebAddr
+	}
+}
+
+func myMongoDBSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "addr":
+		config.MongoDB.Addr = custom.MongoDB.Addr
+	case "database":
+		config.MongoDB.Database = custom.MongoDB.Database
+	}
+}
+
+func myRedisSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "network":
+		config.Redis.Network = custom.Redis.Network
+	case "addr":
+		config.Redis.Addr = custom.Redis.Addr
+	}
+}
+
+func myDevelopSection(config *Config, custom *Config, key toml.Key) {
+	switch key[1] {
+	case "debug":
+		config.Develop.Debug = custom.Develop.Debug
+	case "dw_metrics_fake":
+		config.Develop.DwMetricsFake = custom.Develop.DwMetricsFake
+	case "courier_fake":
+		config.Develop.CourierFake = custom.Develop.CourierFake
+	case "guard_fake":
+		config.Develop.GuardFake = custom.Develop.GuardFake
+	case "stages_fake":
+		config.Develop.StagesFake = custom.Develop.StagesFake
+	case "monitor_fake":
+		config.Develop.MonitorFake = custom.Develop.MonitorFake
+	}
+}

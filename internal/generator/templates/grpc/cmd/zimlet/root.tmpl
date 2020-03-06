@@ -1,0 +1,26 @@
+package zimlet
+
+import (
+	"{{.PkgName}}/internal/config"
+	"{{.PkgName}}/internal/logus"
+	"{{.PkgName}}/servants"
+)
+
+var (
+	inConfigFile string // 自定义配置文件路径
+	inDebug      bool   // 是否debug模式
+)
+
+// coreInit 核心组件初始化
+func coreInit(conf *config.Config) {
+	servants.Init(conf)
+}
+
+// inSetup 通用设置
+func inSetup() {
+	if inDebug {
+		logus.SetLevel(logus.LevelDebug)
+	} else {
+		logus.SetLevel(logus.LevelInfo)
+	}
+}

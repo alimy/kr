@@ -1,0 +1,27 @@
+package dataware
+
+import (
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/config"
+	"github.com/sirupsen/logrus"
+)
+
+// dataware 数据仓储服务逻辑
+type dataware struct {
+	servant.PushMsgDw
+	servant.MetricsDw
+}
+
+// NewDataware new Dataware instance
+func NewDataware(conf *config.Config) servant.Dataware {
+	dw := &dataware{
+		PushMsgDw: newPushMsgDw(),
+	}
+	if conf.Develop.DwMetricsFake {
+		logrus.Infof("in development for Develop.DwMetricsFake == true so use fake dw.MetricsDw")
+		dw.MetricsDw = newMetricDwFake(conf)
+	} else {
+		dw.MetricsDw = newMetricDw(conf)
+	}
+	return dw
+}

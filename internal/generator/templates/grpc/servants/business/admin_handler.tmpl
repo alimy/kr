@@ -1,0 +1,60 @@
+package business
+
+import (
+	"context"
+
+	"{{.PkgName}}/core/models"
+	"{{.PkgName}}/servants/share"
+	"github.com/gogo/protobuf/types"
+
+	admin "{{.PkgName}}/core/proto/gen/admin/v1"
+	common "{{.PkgName}}/core/proto/gen/common/v1"
+)
+
+var (
+	_ admin.ImBisAdminServer = newAdminHandler()
+)
+
+// 内部业务grpc handler
+type adminHandler struct {
+	// TODO
+}
+
+func newAdminHandler() *adminHandler {
+	return &adminHandler{}
+}
+
+// ListOnlineInfo Get recent user online info
+func (h *adminHandler) ListOnlineInfo(c context.Context, req *common.ListOnlineInfoReq) (*common.ListOnlineInfoResp, error) {
+	infos := share.DefaultDw.UserLoginInfos(req.Uids)
+	res := &common.ListOnlineInfoResp{}
+	size := len(infos)
+	if size != 0 {
+		lastOnlineInfo := make(map[int32]*types.Timestamp)
+		for _, info := range infos {
+			if info.Online {
+				res.OnlineUids = append(res.OnlineUids, info.Uid)
+			} else {
+				lastOnlineInfo[info.Uid] = &types.Timestamp{
+					Seconds: info.LogoutTime.Unix(),
+				}
+			}
+		}
+		if len(lastOnlineInfo) > 0 {
+			res.LastOnlineInfos = lastOnlineInfo
+		}
+	}
+	return res, nil
+}
+
+// AddConversaMembers Add conversa members
+func (h *adminHandler) AddConversaMembers(c context.Context, req *admin.ConversaMember) (*types.Empty, error) {
+	// TODO: AddConversaMembers
+	return nil, models.SvcErrUnready
+}
+
+// DelConversaMembers Delete conversa members
+func (h *adminHandler) DelConversaMembers(c context.Context, req *admin.ConversaMember) (*types.Empty, error) {
+	// TODO: DelConversaMembers
+	return nil, models.SvcErrUnready
+}

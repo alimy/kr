@@ -1,0 +1,18 @@
+package servant
+
+import "{{.PkgName}}/core/models"
+
+// ImAgent 接入服务接口socket端
+type ImAgent interface {
+	models.Service
+}
+
+// ImAgentWs 接入服务接口websocket端
+type ImAgentWs interface {
+	ImAgent
+}
+
+// ImAgentWards 接入服务守卫接口
+type ImAgentWards interface {
+	models.Service
+}

@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package common.v1;
+
+import "google/protobuf/timestamp.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+option go_package = "{{.PkgName}}/core/proto/gen/common/v1;common";
+
+// ListOnlineInfoResp  查询最后在线时间等信息返回数据
+message ListOnlineInfoResp {
+    // 当前在线的用户id列表
+    repeated int32 online_uids = 1;
+
+    // 用户id与最后在线时间map
+    map<int32, google.protobuf.Timestamp> last_online_infos = 2;
+}
+
+// ListOnlineInfoReq 查询最后在线时间等信息参数
+message ListOnlineInfoReq {
+    // 用户id列表
+    repeated int32 uids = 1;
+
+    // 会话id
+    // 和用户id列表参数是互斥的，每次调用，只设置其中一个，如果两个都设置，优先解析会话id
+    int64 conversa_id = 2 [(validator.field) = {int_gt: 0 human_error: "id must a positive integer"}];
+}

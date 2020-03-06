@@ -1,0 +1,30 @@
+## zim-ss
+
+### 自动生成assets、grpc接口代码
+assets/assets_gen.go、core/proto/gen/...中的代码是自动生成的，其中assets/config/app.toml中的内容用于生成前者，core/proto/{admin,affairs,common}中包含grpc接口的protocol buffer定义文件，用于生成后者。修改这些定义文件，都需要执行
+以下相应命令重新生成代码：
+
+* 修改assets/config目录中文件后执行以下命令自动生成pkg/assets/assets_gen.go
+
+```bash
+% make gen-assets
+```
+
+* 修改core/proto/{admin,affairs,common}目录中pb定义文件需要执行以下命令自动生成grpc接口代码
+
+```bash
+% make gen-proto
+```
+
+* 自动生成以上代码
+
+```bash
+% make generate
+```
+
+#### 如何调试（测试）grpc接口?
+```
+% zimctl grpc -t <target address> -m <grpc method name> -a <args for method>
+            % #eg:
+            % zimclt grpc -t 127.0.0.1:3003 -m ImBisAffairs.ListOnlineInfo -a 123456
+            ```

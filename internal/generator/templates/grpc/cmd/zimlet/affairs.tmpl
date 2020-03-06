@@ -1,0 +1,64 @@
+package zimlet
+
+import (
+	"{{.PkgName}}/cmd/core"
+	"{{.PkgName}}/internal/config"
+	"{{.PkgName}}/servants/business"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+)
+
+var (
+	affairsAddr       string
+	affairsInWebServe bool
+)
+
+func init() {
+	affairsCmd := &cobra.Command{
+		Use:   "affairs",
+		Short: "zim-ss external affairs service",
+		Long:  "zim-ss external affairs service",
+		Run:   affairsRun,
+	}
+	// parse flags for affairsCmd
+	affairsCmd.Flags().BoolVar(&inDebug, "debug", false, "whether in debug mode")
+	affairsCmd.Flags().StringVarP(&inConfigFile, "config", "c", "", "custom config file path used to init application")
+	affairsCmd.Flags().StringVarP(&agentAddr, "addr", "a", "", "service listen address")
+	affairsCmd.Flags().BoolVar(&affairsInWebServe, "ws", false, "whether serve for web environment use grpc-gateway")
+	// register affairsCmd as sub-command
+	core.Register(affairsCmd)
+}
+
+func affairsRun(cmd *cobra.Command, args []string) {
+	inSetup()
+	conf := affairsSetup()
+	logrus.Infof("start with config:%s", conf)
+	coreInit(conf)
+	if affairsInWebServe {
+		affairsWebServe(conf)
+	} else {
+		affairsServe(conf)
+	}
+}
+
+func affairsSetup() *config.Config {
+	conf := config.InitWith(inConfigFile)
+	if affairsAddr != "" {
+		conf.ExternalAffairs.Addr = affairsAddr
+	}
+	return conf
+}
+
+func affairsServe(conf *config.Config) {
+	service := business.NewImBisAffairs(conf)
+	if err := service.Serve(); err != nil {
+		logrus.Errorf("start external affairs failure: %s", err)
+	}
+}
+
+func affairsWebServe(conf *config.Config) {
+	service := business.NewImBisAffairsWeb(conf)
+	if err := service.Serve(); err != nil {
+		logrus.Errorf("start external affairs for web environment failure: %s", err)
+	}
+}

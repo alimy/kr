@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package imbis.admin.v1;
+
+import "common/v1/metrics.proto";
+import "google/protobuf/empty.proto";
+import "internal_admin.proto";
+
+option go_package = "{{.PkgName}}/core/proto/gen/admin/v1;admin";
+
+// ImBis external admin 服务接口
+// 服务的客户端是IM业务端/运维端，通过导出接口，实时查询ImAgent状态、控制ImAgent运行等
+service ImBisAdmin {
+    // Get recent user online info
+    rpc ListOnlineInfo (common.v1.ListOnlineInfoReq) returns (common.v1.ListOnlineInfoResp) {
+    }
+
+    // Add conversa members
+    rpc AddConversaMembers (ConversaMember) returns (google.protobuf.Empty) {
+    }
+
+    // Delete conversa members
+    rpc DelConversaMembers (ConversaMember) returns (google.protobuf.Empty) {
+    }
+}

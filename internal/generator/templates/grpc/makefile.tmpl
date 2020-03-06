@@ -1,0 +1,104 @@
+GO_ON ?= GO111MODULE=on go
+GO_OFF ?= GO111MODULE=off go
+GO ?= $(GO_ON)
+GOFMT ?= gofmt "-s"
+PACKAGES ?= $(shell GO111MODULE=off $(GO) list ./...)
+VETPACKAGES ?= $(shell GO111MODULE=off $(GO) list ./...)
+GOFILES := $(shell find . -name "*.go" -type f ! -path "./vendor/*")
+ASSETS_DATA_FILES := $(shell find assets | sed 's/  /\\ /g' | xargs -0)
+PROTO_FILES := $(shell find core/proto -name "*.proto" | sed 's/  /\\ /g' | xargs -0)
+
+TAGS = release
+LDFLAGS += -X "{{.PkgName}}/version.BuildTime=$(shell date -u '+%Y-%m-%d %I:%M:%S %Z')"
+LDFLAGS += -X "{{.PkgName}}/version.GitHash=$(shell git rev-parse HEAD)"
+
+.PHONY: default
+default: build
+
+.PHONY: ci
+ci: lint vet test
+
+.PHONY: zimctl
+zimctl: fmt
+	$(GO) build -ldflags '$(LDFLAGS)' -tags '$(TAGS)' -o zimctl cmd/zimctl.go
+
+.PHONY: zimlet
+zimlet: fmt
+	$(GO) build -ldflags '$(LDFLAGS)' -tags '$(TAGS)' -o zimlet cmd/zimlet.go
+
+.PHONY: build
+build: zimctl zimlet
+
+.PHONY: gen-proto
+gen-proto: $(PROTO_FILES)
+	-rm -rf core/proto/gen
+	go generate core/proto/proto.go
+	gofmt -s -w core/proto/gen
+
+.PHONY: gen-assets
+gen-assets: $(ASSETS_DATA_FILES)
+	-rm -f internal/assets/assets_gen.go
+	go generate internal/assets/assets.go
+	gofmt -s -w internal/assets
+
+.PHONY: generate
+generate: gen-proto gen-assets
+
+.PHONY: test
+test:
+	$(GO) test -race ./...
+
+.PHONY: fmt
+fmt:
+	$(GOFMT) -w $(GOFILES)
+
+.PHONY: fmt-check
+fmt-check:
+	@diff=$$($(GOFMT) -d $(GOFILES)); \
+	if [ -n "$$diff" ]; then \
+		echo "Please run 'make fmt' and commit the result:"; \
+		echo "$${diff}"; \
+		exit 1; \
+	fi;
+
+.PHONY: vet
+vet:
+	$(GO_OFF) vet $(VETPACKAGES)
+
+.PHONY: lint
+lint:
+	@hash golint > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO_OFF) get -u golang.org/x/lint/golint; \
+	fi
+	for PKG in $(PACKAGES); do golint -min_confidence 1.0 -set_exit_status $$PKG || exit 1; done;
+
+.PHONY: misspell-check
+misspell-check:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO_OFF) get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -error $(GOFILES)
+
+.PHONY: misspell
+misspell:
+	@hash misspell > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		$(GO_OFF) get -u github.com/client9/misspell/cmd/misspell; \
+	fi
+	misspell -w $(GOFILES)
+
+.PHONY: clean
+clean:
+	$(GO) clean -r ./...
+	rm -f zimctl zimlet
+
+.PHONY: tools
+tools:
+	$(GO_OFF) install \
+	    golang.org/x/lint/golint \
+	    github.com/client9/misspell/cmd/misspell
+	$(GO_ON) install \
+	    github.com/golang/protobuf/protoc-gen-go \
+	    github.com/gogo/protobuf/protoc-gen-gofast \
+	    github.com/gogo/protobuf/protoc-gen-gogofast \
+	    github.com/mwitkow/go-proto-validators/protoc-gen-govalidators \
+	    github.com/go-bindata/go-bindata/go-bindata

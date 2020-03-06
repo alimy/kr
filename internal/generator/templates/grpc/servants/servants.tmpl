@@ -1,0 +1,11 @@
+package servants
+
+import (
+	"{{.PkgName}}/internal/config"
+	"{{.PkgName}}/servants/share"
+)
+
+// Init 初始化servants
+func Init(conf *config.Config) {
+	share.Init(conf)
+}

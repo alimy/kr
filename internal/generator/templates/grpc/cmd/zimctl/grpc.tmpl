@@ -1,0 +1,40 @@
+package zimctl
+
+import (
+	"fmt"
+
+	"{{.PkgName}}/cmd/core"
+	"{{.PkgName}}/internal/rpcx"
+	"github.com/spf13/cobra"
+)
+
+var (
+	grpcTarget string
+	grpcMethod string
+	grpcArgs   string
+
+	grpcCmd *cobra.Command
+)
+
+func init() {
+	grpcCmd = &cobra.Command{
+		Use:   "grpc",
+		Short: "zimctl grpc debug cli",
+		Long:  "zimctl grpc debug cli",
+		Run:   grpcRun,
+	}
+	grpcCmd.Flags().BoolVar(&inDebug, "debug", false, "whether in debug mode")
+	grpcCmd.Flags().StringVarP(&grpcTarget, "target", "t", "127.0.0.1:8098", "remote server address")
+	grpcCmd.Flags().StringVarP(&grpcMethod, "method", "m", "", "grpc method name")
+	grpcCmd.Flags().StringVarP(&grpcArgs, "args", "a", "", "grpc method parms")
+	core.Register(grpcCmd)
+}
+
+func grpcRun(cmd *cobra.Command, args []string) {
+	inSetup()
+	if grpcMethod != "" {
+		rpcx.Call(grpcTarget, grpcMethod, grpcArgs)
+	} else {
+		fmt.Printf("%s", grpcCmd.Help())
+	}
+}

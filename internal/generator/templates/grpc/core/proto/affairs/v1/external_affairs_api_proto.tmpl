@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package imbis.affairs.v1;
+
+import "common/v1/metrics.proto";
+import "affairs/v1/external_affairs.proto";
+
+option go_package = "{{.PkgName}}/core/proto/gen/affairs/v1;affairs";
+
+// ImBis external affairs 对外服务接口
+service ImBisAffairs {
+    // 获取最后在线时间信息
+    rpc ListOnlineInfo (common.v1.ListOnlineInfoReq) returns (common.v1.ListOnlineInfoResp) {
+    }
+
+    // 获取会话列表信息
+    rpc ListConversaInfo (ListConversaInfoReq) returns (ListConversaInfoRes) {
+    }
+}

@@ -1,0 +1,18 @@
+package main
+
+import (
+	"{{.PkgName}}/cmd/core"
+
+	_ "{{.PkgName}}/cmd/zimlet"
+)
+
+func main() {
+	// setup root cli command of application
+	core.Setup(
+		"zimlet",                 // command name
+		"zim-ss service command", // command short describe
+		"zim-ss service command", // command long describe
+	)
+	// execute start application
+	core.Execute()
+}

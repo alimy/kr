@@ -1,0 +1,47 @@
+package agent
+
+import (
+	"{{.PkgName}}/core/servant"
+)
+
+// 接入层服务
+type imAgent struct {
+	agentConfig
+	// TODO: imAgent
+}
+
+// agentConfig agent通用配置
+type agentConfig struct {
+	crateBufCap uint16
+}
+
+// CrateBufCapOpt crate buffer cap opt
+func CrateBufCapOpt(cap uint16) ImAgentOpt {
+	return imAgentOptFun(func(agent *agentConfig) {
+		agent.crateBufCap = cap
+	})
+}
+
+// ImAgentOpt ImAgent初始化选项
+type ImAgentOpt interface {
+	apply(agent *agentConfig)
+}
+
+// imAgentOptFun ImAgent初书化辅助函数
+type imAgentOptFun func(*agentConfig)
+
+func (of imAgentOptFun) apply(agent *agentConfig) {
+	of(agent)
+}
+
+// NewImAgent 获取servant.ImAgent实例
+func NewImAgent(opts ...ImAgentOpt) servant.ImAgent {
+	agent := &imAgent{
+		agentConfig{},
+	}
+	config := &agent.agentConfig
+	for _, opt := range opts {
+		opt.apply(config)
+	}
+	return agent
+}

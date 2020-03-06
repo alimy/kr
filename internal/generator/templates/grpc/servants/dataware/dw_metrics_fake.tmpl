@@ -1,0 +1,56 @@
+package dataware
+
+import (
+	"time"
+
+	"{{.PkgName}}/core/models"
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/config"
+)
+
+var (
+	_ servant.MetricsDw = newMetricDwFake(nil)
+)
+
+// metricsDwFake 监控状态数据接口伪实现，所有接口都返回用于测试的假数据
+type metricsDwFake struct {
+	// empty
+}
+
+func newMetricDwFake(_ *config.Config) *metricsDwFake {
+	return &metricsDwFake{}
+}
+
+// UserLoginInfos 获取用户在线信息
+func (m *metricsDwFake) UserLoginInfos(uids []int32) []*models.LoginMetric {
+	size := len(uids)
+	if size == 0 {
+		return nil
+	}
+	res := make([]*models.LoginMetric, size)
+	for i, uid := range uids {
+		if i%2 == 0 {
+			res[i] = &models.LoginMetric{
+				Uid:    uid,
+				Online: true,
+			}
+		} else {
+			res[i] = &models.LoginMetric{
+				Uid:        uid,
+				Online:     false,
+				LogoutTime: time.Now(),
+			}
+		}
+	}
+	return res
+}
+
+// UserLoginMc 用户登录成功监控指标
+func (m *metricsDwFake) UserLoginMc(uid int32) {
+	// TODO: 落地登入状态数据
+}
+
+// UserLogoutMc 用户注销监控指标
+func (m *metricsDwFake) UserLogoutMc(uid int32, cause models.LogoutCause) {
+	// TODO: 落地注销状态数据
+}

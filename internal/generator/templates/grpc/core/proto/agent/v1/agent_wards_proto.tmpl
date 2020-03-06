@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package imbis.agent.v1;
+
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+option go_package = "{{.PkgName}}/core/proto/gen/agent/v1;agent";
+
+// 会话成员
+message ConversaMember {
+    // Conversa Id
+    int64 conversa_id = 1 [(validator.field) = {int_gt: 0 human_error: "id must a positive integer"}];
+    // Member's uid
+    repeated int32 member_uids = 2;
+}

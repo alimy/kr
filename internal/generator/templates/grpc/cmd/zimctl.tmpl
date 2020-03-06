@@ -1,0 +1,18 @@
+package main
+
+import (
+	"{{.PkgName}}/cmd/core"
+
+	_ "{{.PkgName}}/cmd/zimctl"
+)
+
+func main() {
+	// setup root cli command of application
+	core.Setup(
+		"zimctl",             // command name
+		"zim-ss ctl command", // command short describe
+		"zim-ss ctl command", // command long describe
+	)
+	// execute start application
+	core.Execute()
+}

@@ -1,0 +1,27 @@
+package rpcx
+
+import (
+	"context"
+	"strconv"
+
+	"{{.PkgName}}/core/proto/gen/affairs/v1"
+	"{{.PkgName}}/core/proto/gen/common/v1"
+	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+)
+
+// listOnlineInfo ImBisAffairs.ListOnlineInfo(...) test call
+func listOnlineInfo(ctx context.Context, cc *grpc.ClientConn, params string) {
+	uid := 0
+	if params != "" {
+		uid, _ = strconv.Atoi(params)
+	}
+	logrus.Infof("call ImBisAffairs.ListOnlineInfo(%d)", uid)
+	c := affairs.NewImBisAffairsClient(cc)
+	listOnlineInfoReq := &common.ListOnlineInfoReq{Uids: []int32{int32(uid)}}
+	if resp, err := c.ListOnlineInfo(ctx, listOnlineInfoReq); err == nil {
+		logrus.Infof("resp: %v", resp)
+	} else {
+		logrus.Infof("failed to ListOnlineInfo (as expected): %s", err)
+	}
+}

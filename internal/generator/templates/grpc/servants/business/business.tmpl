@@ -1,0 +1,21 @@
+package business
+
+import (
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/config"
+)
+
+// NewImBisAffairs ImBisAffairs新实例
+func NewImBisAffairs(conf *config.Config) servant.ImBisAffairs {
+	return newBisAffairs(conf.ExternalAffairs.Addr)
+}
+
+// NewImBisAffairsWeb ImBisAffairs for web新实例
+func NewImBisAffairsWeb(conf *config.Config) servant.ImBisAffairs {
+	return newBisAffairsWeb(conf.ExternalAffairs.WebAddr)
+}
+
+// NewImBisAdmin ImBisAdmin新实例
+func NewImBisAdmin(conf *config.Config) servant.ImBisAdmin {
+	return newBisAdmin(conf.InternalAdmin.Addr)
+}

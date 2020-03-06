@@ -1,0 +1,56 @@
+package business
+
+import (
+	"context"
+
+	"{{.PkgName}}/core/models"
+	"{{.PkgName}}/internal/rpcx"
+	"{{.PkgName}}/servants/share"
+	"github.com/gogo/protobuf/types"
+
+	affairs "{{.PkgName}}/core/proto/gen/affairs/v1"
+	common "{{.PkgName}}/core/proto/gen/common/v1"
+)
+
+var (
+	_ affairs.ImBisAffairsServer = newAffairsHandler()
+)
+
+// 外部业务grpc handler
+type affairsHandler struct {
+	rpcx.RxLog
+}
+
+func newAffairsHandler() *affairsHandler {
+	return &affairsHandler{RxLog: "ImBisAffairs"}
+}
+
+// ListOnlineInfo Get recent user online info
+func (h *affairsHandler) ListOnlineInfo(c context.Context, req *common.ListOnlineInfoReq) (*common.ListOnlineInfoResp, error) {
+	h.LogCallInfo("ListOnlineInfo", req)
+	infos := share.DefaultDw.UserLoginInfos(req.Uids)
+	res := &common.ListOnlineInfoResp{}
+	size := len(infos)
+	if size != 0 {
+		lastOnlineInfo := make(map[int32]*types.Timestamp)
+		for _, info := range infos {
+			if info.Online {
+				res.OnlineUids = append(res.OnlineUids, info.Uid)
+			} else {
+				lastOnlineInfo[info.Uid] = &types.Timestamp{
+					Seconds: info.LogoutTime.Unix(),
+				}
+			}
+		}
+		if len(lastOnlineInfo) > 0 {
+			res.LastOnlineInfos = lastOnlineInfo
+		}
+	}
+	return res, nil
+}
+
+// ListConversaInfo 获取会话列表信息
+func (h *affairsHandler) ListConversaInfo(c context.Context, req *affairs.ListConversaInfoReq) (*affairs.ListConversaInfoRes, error) {
+	// TODO: ListConversaInfo
+	return nil, models.SvcErrUnready
+}

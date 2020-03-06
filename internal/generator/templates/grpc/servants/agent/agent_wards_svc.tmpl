@@ -1,0 +1,32 @@
+package agent
+
+import (
+	"fmt"
+	"net"
+
+	"{{.PkgName}}/core/models"
+	"{{.PkgName}}/internal/insecure"
+	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+
+	agent "{{.PkgName}}/core/proto/gen/agent/v1"
+)
+
+// Serve 开始接客了
+func (w *imAgentWards) Serve() error {
+	logrus.Info("agent wards service starting")
+	l, err := net.Listen("tcp", w.addr)
+	if err != nil {
+		return fmt.Errorf("failed to listen: %w", err)
+	}
+	s := grpc.NewServer(
+		grpc.Creds(credentials.NewServerTLSFromCert(&insecure.Cert)),
+	)
+	agent.RegisterImAgentWardsServer(s, w)
+	logrus.Infof("agent wards listen in %s", w.addr)
+	if err := s.Serve(l); err != nil {
+		return fmt.Errorf("%s: %w", models.SvcErrUnready, err)
+	}
+	return nil
+}

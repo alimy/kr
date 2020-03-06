@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package imbis.agent.v1;
+
+import "agent_wards.proto";
+import "google/protobuf/empty.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+option go_package = "{{.PkgName}}/core/proto/gen/agent/v1;agent";
+
+// ImAgent Wards rpc
+// 服务接口由ImAgent端实现，客户端是ImAdmin，用于实时更新ImAgent的运行状态
+service ImAgentWards {
+    // Add conversa members
+    rpc AddConversaMembers (ConversaMember) returns (google.protobuf.Empty) {
+    }
+
+    // Delete conversa members
+    rpc DelConversaMembers (ConversaMember) returns (google.protobuf.Empty) {
+    }
+}

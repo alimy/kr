@@ -1,0 +1,13 @@
+package agent
+
+import (
+	"{{.PkgName}}/core/models"
+	"github.com/sirupsen/logrus"
+)
+
+// Serve 开始接客了
+func (im *imAgentWs) Serve() error {
+	// TODO
+	logrus.Info("start im agent websocket service")
+	return models.SvcErrUnready
+}

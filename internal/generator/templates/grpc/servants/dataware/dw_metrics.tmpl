@@ -1,0 +1,37 @@
+package dataware
+
+import (
+	"{{.PkgName}}/core/models"
+	"{{.PkgName}}/core/servant"
+	"{{.PkgName}}/internal/config"
+)
+
+var (
+	_ servant.MetricsDw = newMetricDw(nil)
+)
+
+// metricsDw 监控状态数据接口实现
+type metricsDw struct {
+	// TODO
+}
+
+func newMetricDw(config *config.Config) *metricsDw {
+	// TODO
+	return nil
+}
+
+// UserLoginInfos 获取用户在线信息
+func (m *metricsDw) UserLoginInfos(uids []int32) []*models.LoginMetric {
+	// TODO
+	return nil
+}
+
+// UserLoginMc 用户登录成功监控指标
+func (m *metricsDw) UserLoginMc(uid int32) {
+	// TODO
+}
+
+// UserLogoutMc 用户注销监控指标
+func (m *metricsDw) UserLogoutMc(uid int32, cause models.LogoutCause) {
+	// TODO
+}

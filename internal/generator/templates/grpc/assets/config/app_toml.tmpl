@@ -1,0 +1,37 @@
+[application]
+name = "zim-ss"
+version = "0.1.0"
+authors = ["Michael Li <alimy@gility.net>"]
+description = "zim single server"
+
+# ImAgent for socket
+[agent]
+addr = "127.0.0.1"
+port = 3000
+
+# ImAgent for websoket
+[agent_web]
+addr = "127.0.0.1"
+port = 3001
+
+# ImAgent Wards config
+[agent_wards]
+addr = "127.0.0.1:3002"
+
+# ImTitoli config
+[im_titoli]
+addr = "127.0.0.1:3003"
+
+# ImBis internal admin
+[internal_admin]
+addr = "127.0.0.1:3004"
+
+# ImBis external affairs
+[external_affairs]
+addr = "127.0.0.1:3005"
+web_addr = "127.0.0.1:3006"
+
+# config in develop
+[develop]
+debug = false           # whether force in debug mode
+dw_metrics_fake = true  # whether use fake implementation of dw_metrics module

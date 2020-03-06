@@ -1,0 +1,189 @@
+package config
+
+import (
+	"fmt"
+)
+
+// Config application config model
+type Config struct {
+	Application     Application
+	Agent           Agent
+	AgentWeb        AgentWeb        `toml:"agent_web"`
+	AgentWards      AgentWards      `toml:"agent_wards"`
+	ImTitoli        ImTitoli        `toml:"im_titoli"`
+	InternalAdmin   InternalAdmin   `toml:"internal_admin"`
+	ExternalAffairs ExternalAffairs `toml:"external_affairs"`
+	MongoDB         MongoDB         `toml:"mongodb"`
+	Redis           Redis
+	Develop         Develop
+}
+
+// Application indicate application section config
+type Application struct {
+	Name        string
+	Version     string
+	Authors     []string
+	Description string
+}
+
+// Agent indicate agent section config
+type Agent struct {
+	Addr        string
+	Port        uint16
+	InWebsocket bool `toml:"in_websocket"`
+}
+
+// AgentWeb indicate agent_web section config
+type AgentWeb struct {
+	Addr string
+	Port uint16
+}
+
+// AgentWards indicate agent_wards section
+type AgentWards struct {
+	Addr string
+}
+
+// ImTitoli indicate im_titoli section config
+type ImTitoli struct {
+	Addr string
+}
+
+// InternalAdmin indicate internal_admin section config
+type InternalAdmin struct {
+	Addr string
+}
+
+// ExternalAffairs indicate external_affairs section config
+type ExternalAffairs struct {
+	Addr    string
+	WebAddr string `toml:"web_addr"`
+}
+
+// Mongo indicate mongodb section config
+type MongoDB struct {
+	Addr     string
+	Database string
+}
+
+// Redis indicate redis section config
+type Redis struct {
+	Network string
+	Addr    string
+}
+
+// Develop indicate develop section config
+type Develop struct {
+	Debug         bool
+	DwMetricsFake bool `toml:"dw_metrics_fake"`
+	CourierFake   bool `toml:"courier_fake"`
+	GuardFake     bool `toml:"guard_fake"`
+	StagesFake    bool `toml:"stages_fake"`
+	MonitorFake   bool `toml:"monitor_fake"`
+}
+
+// SetAddr set addr
+func (c *Agent) SetAddr(addr string) {
+	if addr != "" {
+		c.Addr = addr
+	}
+}
+
+// SetPort set port
+func (c *Agent) SetPort(port uint16) {
+	if port != 0 {
+		c.Port = port
+	}
+}
+
+// SetAddr set addr
+func (c *AgentWeb) SetAddr(addr string) {
+	if addr != "" {
+		c.Addr = addr
+	}
+}
+
+// SetPort set port
+func (c *AgentWeb) SetPort(port uint16) {
+	if port != 0 {
+		c.Port = port
+	}
+}
+
+// SetAddrPort set addr and port
+func (c *Agent) SetAddrPort(addr string, port uint16) {
+	c.SetAddr(addr)
+	c.SetPort(port)
+}
+
+// SetAddrPort set addr and port
+func (c *AgentWeb) SetAddrPort(addr string, port uint16) {
+	c.SetAddr(addr)
+	c.SetPort(port)
+}
+
+// AgentAddr return serve address
+func (c *Agent) AgentAddr() string {
+	return fmt.Sprintf("%s:%d", c.Addr, c.Port)
+}
+
+// AgentAddr return serve address
+func (c *AgentWeb) AgentAddr() string {
+	return fmt.Sprintf("%s:%d", c.Addr, c.Port)
+}
+
+// String string object
+func (c *Application) String() string {
+	return fmt.Sprintf("{name:%q, version:%q, authors:%v,description:%q}",
+		c.Name, c.Version, c.Authors, c.Description)
+}
+
+// String string object
+func (c *Agent) String() string {
+	return fmt.Sprintf("{addr:%q, port:%d}", c.Addr, c.Port)
+}
+
+// String string object
+func (c *AgentWeb) String() string {
+	return fmt.Sprintf("{addr:%q, port:%d}", c.Addr, c.Port)
+}
+
+// String string object
+func (c *ImTitoli) String() string {
+	return fmt.Sprintf("{addr:%q}", c.Addr)
+}
+
+// String string object
+func (c *InternalAdmin) String() string {
+	return fmt.Sprintf("{addr:%q}", c.Addr)
+}
+
+// String string object
+func (c *ExternalAffairs) String() string {
+	return fmt.Sprintf("{addr:%q,web_addr:%q}", c.Addr, c.WebAddr)
+}
+
+// String string object
+func (c *MongoDB) String() string {
+	return fmt.Sprintf("{addr:%q, database:%q}", c.Addr, c.Database)
+}
+
+// String string object
+func (c *Redis) String() string {
+	return fmt.Sprintf("{addr:%q}", c.Addr)
+}
+
+// String string object
+func (c *Develop) String() string {
+	return fmt.Sprintf("{debug:%t,dw_metrics_fake:%t,courier_fake:%t,guard_fake:%t,stages_fake:%t,monitor_fake:%t,}",
+		c.Debug, c.DwMetricsFake, c.CourierFake,
+		c.GuardFake, c.StagesFake, c.MonitorFake)
+}
+
+// String string object
+func (c *Config) String() string {
+	return fmt.Sprintf("{application:%s,agent:%s,agent_web:%s,im_titoli:%s,internal_admin:%s,external_affairs:%s,mongodb:%s,redis:%s,develop:%s}",
+		&c.Application, &c.Agent, &c.AgentWeb,
+		&c.ImTitoli, &c.InternalAdmin, &c.ExternalAffairs,
+		&c.MongoDB, &c.Redis, &c.Develop)
+}

@@ -1,0 +1,24 @@
+package models
+
+import "time"
+
+// 用户注销原因常量
+const (
+	DwLogoutCauseNone      LogoutCause = iota // 未知
+	DwLogoutCauseNormal                       // 正常，用户主动下线
+	DwLogoutCauseHeartbeat                    // 异常断线，心跳包异常
+	DwLogoutCauseKicked                       // 被踢
+)
+
+// 用户注销原因
+type LogoutCause int8
+
+// LoginMetric 用户登入状态信息
+type LoginMetric struct {
+	Uid         int32       `json:"uid"`          // 用户ID
+	Online      bool        `json:"online"`       // 是否在线
+	LoginTime   time.Time   `json:"login_time"`   // 最后登入时间
+	LogoutTime  time.Time   `json:"logout_time"`  // 最后登出时间
+	LogoutCause LogoutCause `json:"logout_cause"` // 最后用户注销原因
+
+}

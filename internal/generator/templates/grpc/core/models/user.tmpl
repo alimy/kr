@@ -1,0 +1,10 @@
+package models
+
+// User 用户模型
+type User struct {
+	Uid         int32
+	ConversaIds []int64
+}
+
+// Members 成员列表
+type Members []*User
