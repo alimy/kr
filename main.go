@@ -5,7 +5,7 @@
 package main
 
 import (
-	"github.com/alimy/kr/internal/cmd"
+	"github.com/alimy/kr/cmd"
 )
 
 func main() {

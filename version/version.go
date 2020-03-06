@@ -4,13 +4,15 @@
 
 package version
 
-import "github.com/coreos/go-semver/semver"
+import (
+	"github.com/coreos/go-semver/semver"
+)
 
 var (
 	// GitHash Value will be set during build
-	GitHash = "Not provided"
+	GitHash = ""
 	// BuildTime Value will be set during build
-	BuildTime = "Not provided"
+	BuildTime = ""
 )
 
 // AppVer version of Mirc
