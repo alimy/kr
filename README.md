@@ -1,5 +1,12 @@
 ## Kr
-develop help toolkit
+kr provide some develop help toolkits.
+
+### Feature
+* support generate grpc style template project use ```kr new -d examples -t grpc``` command.
+* support generate [gin](https://github.com/go-gonic/gin) style template project use ```kr new -d examples -t gin``` command.
+* support generate [go-chi](https://github.com/go-chi/chi) style template project use ```kr new -d examples -t chi``` command.
+* support generate [mux](https://github.com/gorilla/mux) style template project use ```kr new -d examples -t mux``` command.
+* support generate [httprouter](https://github.com/julienschmidt/httprouter) style template project use ```kr new -d examples -t httprouter``` command.
 
 ### Usage
 ```bash
