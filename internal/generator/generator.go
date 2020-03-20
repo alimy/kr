@@ -28,7 +28,7 @@ func Generate(dstPath string, style string, pkgName string) error {
 		PkgName: pkgName,
 	}
 
-	tmpl := template.New("mgo")
+	tmpl := template.New("kr")
 	for fileName, assetInfo := range tmpls {
 		filePath = filepath.Join(dstPath, fileName)
 		dirPath = filepath.Dir(filePath)
