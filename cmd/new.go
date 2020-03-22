@@ -16,7 +16,7 @@ import (
 var (
 	dstPath string
 	pkgName string
-	style   string
+	style   []string
 )
 
 func init() {
@@ -30,7 +30,7 @@ func init() {
 	// parse flags for agentCmd
 	newCmd.Flags().StringVarP(&dstPath, "dst", "d", ".", "genereted destination target directory")
 	newCmd.Flags().StringVarP(&pkgName, "pkg", "p", "github.com/alimy/examples", "project's package name")
-	newCmd.Flags().StringVarP(&style, "type", "t", "grpc", "generated engine type style:[grpc|gin|chi|echo|iris|macaron|mux|httprouter], default is grpc")
+	newCmd.Flags().StringSliceVarP(&style, "style", "s", []string{"grpc"}, "generated engine type style:[{grpc[,zim]}|zim|{[mir,]gin|chi|echo|iris|macaron|mux|httprouter}], default is grpc")
 
 	// register agentCmd as sub-command
 	register(newCmd)

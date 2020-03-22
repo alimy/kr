@@ -12,14 +12,14 @@ import (
 )
 
 // Generate generate template project
-func Generate(dstPath string, style string, pkgName string) error {
+func Generate(dstPath string, style []string, pkgName string) error {
 	var (
 		err               error
 		filePath, dirPath string
 		file              *os.File
 	)
 
-	tmpls, exist := tmplFiles[style]
+	tmpls, exist := tmplInfosFrom(style)
 	if !exist {
 		return fmt.Errorf("not exist style(%s) template project", style)
 	}
