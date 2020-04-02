@@ -22,6 +22,7 @@
 /chi
 /echo
 /iris
+/fiber
 /macaron
 /mux
 /httprouter

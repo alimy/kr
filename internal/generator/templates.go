@@ -53,6 +53,8 @@ func init() {
 		{[]string{"mir", "mux"}, "mux"},
 		{[]string{"iris"}, "iris"},
 		{[]string{"mir", "iris"}, "iris"},
+		{[]string{"fiber"}, "fiber"},
+		{[]string{"mir", "fiber"}, "fiber"},
 		{[]string{"httprouter"}, "httprouter"},
 		{[]string{"mir", "httprouter"}, "httprouter"},
 	} {
