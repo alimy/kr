@@ -1,0 +1,80 @@
+package servants
+
+import (
+	"strconv"
+
+	"{{ .PkgName }}/internal/errorx"
+	"{{ .PkgName }}/internal/locator"
+	"{{ .PkgName }}/internal/utils"
+	"{{ .PkgName }}/mirc/gen/api"
+	"{{ .PkgName }}/proto/gen/Calculator"
+	"github.com/gin-gonic/gin"
+)
+
+type calculatorSrv struct {
+	baseServant
+	calSrv *Calculator.Calculator
+}
+
+func (s *calculatorSrv) Add(c *gin.Context) {
+	lhs, rhs := c.Param("lhs"), c.Param("rhs")
+	var (
+		lh, rh, res int32
+		v           int
+		err1, err2  error
+	)
+
+	if v, err1 = strconv.Atoi(lhs); err1 == nil {
+		lh = int32(v)
+	}
+	if v, err2 = strconv.Atoi(rhs); err2 == nil {
+		rh = int32(v)
+	}
+	if err1 != nil || err2 != nil {
+		s.abort(c, errorx.ErrParamNotValide)
+		return
+	}
+	if _, err := s.calSrv.Add(lh, rh, &res); err == nil {
+		s.success(c, res)
+	} else {
+		s.failure(c, err)
+	}
+}
+
+func (s *calculatorSrv) Sub(c *gin.Context) {
+	lhs, rhs := c.Param("lhs"), c.Param("rhs")
+	var (
+		lh, rh, res int32
+		v           int
+		err1, err2  error
+	)
+
+	if v, err1 = strconv.Atoi(lhs); err1 == nil {
+		lh = int32(v)
+	}
+	if v, err2 = strconv.Atoi(rhs); err2 == nil {
+		rh = int32(v)
+	}
+	if err1 != nil || err2 != nil {
+		s.abort(c, errorx.ErrParamNotValide)
+		return
+	}
+	if _, err := s.calSrv.Sub(lh, rh, &res); err == nil {
+		s.success(c, res)
+	} else {
+		s.failure(c, err)
+	}
+}
+
+// NewCalculator return a Calculator implement object
+func NewCalculator() api.Calculator {
+	comm := locator.MyCommunicator()
+	calObj := utils.ObjFrom("kry.calculator.CalculatorObj", "tcp -h 127.0.0.1 -p 10028 -t 60000")
+	calSrv := new(Calculator.Calculator)
+	comm.StringToProxy(calObj, calSrv)
+
+	return &calculatorSrv{
+		baseServant: newBaseServant(),
+		calSrv:      calSrv,
+	}
+}

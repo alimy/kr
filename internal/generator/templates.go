@@ -57,6 +57,11 @@ func init() {
 		{[]string{"mir", "fiber"}, "fiber"},
 		{[]string{"httprouter"}, "httprouter"},
 		{[]string{"mir", "httprouter"}, "httprouter"},
+		{[]string{"tars"}, "tars"},
+		{[]string{"tars", "simple"}, "tars"},
+		{[]string{"tars", "mir"}, "tars/mir/gin"},
+		{[]string{"tars", "gin"}, "tars/mir/gin"},
+		{[]string{"tars", "mir", "gin"}, "tars/mir/gin"},
 	} {
 		sort.Strings(s.styles)
 		styles[strings.Join(s.styles, ":")] = s.target

@@ -18,6 +18,6 @@ var (
 // AppVer version of kr
 var AppVer = semver.Version{
 	Major: 0,
-	Minor: 3,
-	Patch: 6,
+	Minor: 4,
+	Patch: 0,
 }

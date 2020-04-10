@@ -1,0 +1,28 @@
+package main
+
+import (
+	"github.com/TarsCloud/TarsGo/tars"
+	"{{ .PkgName }}/mirc/gen/api"
+	"{{ .PkgName }}/servants"
+	"github.com/gin-gonic/gin"
+
+	_ "{{ .PkgName }}/internal/debug"
+)
+
+func main() {
+	e := gin.Default()
+	registerServants(e)
+
+	mux := &tars.TarsHttpMux{}
+	mux.HandleFunc("/", e.ServeHTTP)
+
+	cfg := tars.GetServerConfig()
+	obj := cfg.App + "." + cfg.Server + ".PortalObj"
+	tars.AddHttpServant(mux, obj)
+	tars.Run()
+}
+
+func registerServants(e *gin.Engine) {
+	// TODO: register routes to e
+	api.RegisterCalculatorServant(e, servants.NewCalculator())
+}

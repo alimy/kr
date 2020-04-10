@@ -1,0 +1,13 @@
+package errorx
+
+import "net/http"
+
+var (
+	ErrParamNotValide = NewHttpError(http.StatusBadRequest, "param not valide")
+	ErrInternalServer = NewHttpError(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+)
+
+type HttpError interface {
+	error
+	Code() int
+}
