@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/TarsCloud/TarsGo/tars"
-	"{{ .PkgName }}/proto/gen/Calculator"
+	"{{ .PkgName }}/proto/gen/calculator"
 	"{{ .PkgName }}/servants"
 
 	_ "{{ .PkgName }}/internal/debug"
 )
 
 func main() {
-	app := new(Calculator.Calculator)
+	app := new(calculator.Calculator)
 	srv := servants.NewCalculator()
 	cfg := tars.GetServerConfig()
 	obj := cfg.App + "." + cfg.Server + ".CalculatorObj"

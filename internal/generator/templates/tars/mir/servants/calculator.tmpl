@@ -7,13 +7,13 @@ import (
 	"{{ .PkgName }}/internal/locator"
 	"{{ .PkgName }}/internal/utils"
 	"{{ .PkgName }}/mirc/gen/api"
-	"{{ .PkgName }}/proto/gen/Calculator"
+	"{{ .PkgName }}/proto/gen/calculator"
 	"github.com/gin-gonic/gin"
 )
 
 type calculatorSrv struct {
 	baseServant
-	calSrv *Calculator.Calculator
+	calSrv *calculator.Calculator
 }
 
 func (s *calculatorSrv) Add(c *gin.Context) {
@@ -70,7 +70,7 @@ func (s *calculatorSrv) Sub(c *gin.Context) {
 func NewCalculator() api.Calculator {
 	comm := locator.MyCommunicator()
 	calObj := utils.ObjFrom("kry.calculator.CalculatorObj", "tcp -h 127.0.0.1 -p 10028 -t 60000")
-	calSrv := new(Calculator.Calculator)
+	calSrv := new(calculator.Calculator)
 	comm.StringToProxy(calObj, calSrv)
 
 	return &calculatorSrv{

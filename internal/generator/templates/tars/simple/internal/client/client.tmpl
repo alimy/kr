@@ -6,13 +6,13 @@ import (
 
 	"{{ .PkgName }}/internal/locator"
 	"{{ .PkgName }}/internal/utils"
-	"{{ .PkgName }}/proto/gen/Calculator"
+	"{{ .PkgName }}/proto/gen/calculator"
 )
 
 func main() {
 	comm := locator.MyCommunicator()
 	obj := utils.ObjFrom("kry.calculator.CalculatorObj", "tcp -h 127.0.0.1 -p 10028 -t 60000")
-	app := new(Calculator.Calculator)
+	app := new(calculator.Calculator)
 	comm.StringToProxy(obj, app)
 
 	var res int32
