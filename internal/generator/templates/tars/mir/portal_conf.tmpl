@@ -2,22 +2,22 @@
         <application>
                 <server>
                         app=kry
-                        server=calculator
+                        server=portal
                         local=tcp -h 127.0.0.1 -p 10037 -t 30000
 						logpath=/tmp
-                        <kry.calculator.PortalObjAdapter>
+                        <kry.portal.PortalObjAdapter>
                                 allow
                                 endpoint=tcp -h 127.0.0.1 -p 10038 -t 60000
-                                handlegroup=kry.calculator.PortalObjAdapter
+                                handlegroup=kry.portal.PortalObjAdapter
                                 maxconns=200000
                                 protocol=tars
                                 queuecap=10000
                                 queuetimeout=60000
-                                servant=kry.calculator.PortalObj
+                                servant=kry.portal.PortalObj
                                 shmcap=0
                                 shmkey=0
                                 threads=1
-                        </kry.calculator.PortalObjAdapter>
+                        </kry.portal.PortalObjAdapter>
                 </server>
         </application>
 </tars>

@@ -30,7 +30,7 @@ func init() {
 		"go.mod":                                {"tars/mir/gin_go_mod.tmpl", true, false},
 		"proto/calculator.tars":                 {"tars/mir/proto/calculator_tars.tmpl", false, false},
 		"proto/gen/calculator/Calculator_IF.go": {"tars/mir/proto/gen/calculator/Calculator_IF.tmpl", false, false},
-		"calculator.conf":                       {"tars/mir/calculator_conf.tmpl", false, false},
+		"portal.conf":                           {"tars/mir/portal_conf.tmpl", false, false},
 		"makefile":                              {"tars/mir/makefile.tmpl", false, false},
 		"internal/locator/comm.go":              {"tars/mir/internal/locator/comm.tmpl", false, false},
 		"internal/locator/locator.go":           {"tars/mir/internal/locator/locator.tmpl", false, false},
