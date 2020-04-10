@@ -40,7 +40,7 @@ $(TARGET): gen-tars $(GO_SRC)
 	$(GO) build $(GO_BUILD_FLAG) -o $@
 #----------------------------------------------------------------------------------
 pprof: gen-tars $(GO_SRC)
-	$(GO) build -tags '$(TAGS)' $(GO_BUILD_FLAG) -o $@
+	$(GO) build -tags '$(TAGS)' $(GO_BUILD_FLAG) -o $(TARGET)
 #----------------------------------------------------------------------------------
 serve: gen-tars $(GO_SRC)
 	$(GO) run $(GO_BUILD_FLAG) main.go --config=calculator.conf
@@ -60,7 +60,12 @@ generate:
 	@go generate mirc/main.go
 	@$(GOFMT) ./
 #----------------------------------------------------------------------------------
-release: $(TARGET) $(CONFIG)
+.PHONY: linux-amd64
+linux-amd64: gen-tars $(GO_SRC)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build $(GO_BUILD_FLAG) -o $(TARGET)
+#----------------------------------------------------------------------------------
+.PHONY: release
+release: linux-amd64 $(CONFIG)
 	@if [ -d release/$(TARGET)_tmp_dir ]; then \
 		echo "dir has exist:$(TARGET)_tmp_dir, abort."; \
 		exit 1; \

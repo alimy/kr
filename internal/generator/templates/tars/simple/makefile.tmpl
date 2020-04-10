@@ -36,25 +36,31 @@ copyfile = if test -z "$(APP)" || test -z "$(TARGET)"; then \
 
 ALL: $(TARGET)
 #----------------------------------------------------------------------------------
-$(TARGET): TARSBUILD $(GO_SRC)
+$(TARGET): gen-tars $(GO_SRC)
 	$(GO) build $(GO_BUILD_FLAG) -o $@
 #----------------------------------------------------------------------------------
-pprof: TARSBUILD $(GO_SRC)
-	$(GO) build -tags '$(TAGS)' $(GO_BUILD_FLAG) -o $@
+pprof: gen-tars $(GO_SRC)
+	$(GO) build -tags '$(TAGS)' $(GO_BUILD_FLAG) -o $(TARGET)
 #----------------------------------------------------------------------------------
-serve: TARSBUILD $(GO_SRC)
+serve: gen-tars $(GO_SRC)
 	$(GO) run $(GO_BUILD_FLAG) main.go --config=calculator.conf
 #----------------------------------------------------------------------------------
-serve-pprof: TARSBUILD $(GO_SRC)
+serve-pprof: gen-tars $(GO_SRC)
 	$(GO) run -tags '$(TAGS)' $(GO_BUILD_FLAG) main.go --config=calculator.conf
 #----------------------------------------------------------------------------------
-client: TARSBUILD $(GO_SRC)
+client: gen-tars $(GO_SRC)
 	$(GO) run internal/client/client.go --config=calculator.conf
 #----------------------------------------------------------------------------------
-TARSBUILD: $(TARS_SRC)
+.PHONY: gen-tars
+gen-tars: $(TARS_SRC)
 	$(TARS2GO) $(J2GO_FLAG) $(TARS_SRC)
 #----------------------------------------------------------------------------------
-release: $(TARGET) $(CONFIG)
+.PHONY: linux-amd64
+linux-amd64: gen-tars $(GO_SRC)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build $(GO_BUILD_FLAG) -o $(TARGET)
+#----------------------------------------------------------------------------------
+.PHONY: release
+release: linux-amd64 $(CONFIG)
 	@if [ -d release/$(TARGET)_tmp_dir ]; then \
 		echo "dir has exist:$(TARGET)_tmp_dir, abort."; \
 		exit 1; \
