@@ -33,44 +33,51 @@ var (
 	styles = make(map[string]string)
 )
 
+// ts style slice alice type
+type ts []string
+
 func init() {
 	for _, s := range []struct {
-		styles []string
+		styles ts
 		target string
 	}{
-		{[]string{"zim"}, "grpc"},
-		{[]string{"grpc"}, "grpc"},
-		{[]string{"grpc", "zim"}, "grpc"},
-		{[]string{"gin"}, "gin"},
-		{[]string{"mir", "gin"}, "gin"},
-		{[]string{"chi"}, "chi"},
-		{[]string{"mir", "chi"}, "chi"},
-		{[]string{"echo"}, "echo"},
-		{[]string{"mir", "echo"}, "echo"},
-		{[]string{"macaron"}, "macaron"},
-		{[]string{"mir", "macaron"}, "macaron"},
-		{[]string{"mux"}, "mux"},
-		{[]string{"mir", "mux"}, "mux"},
-		{[]string{"iris"}, "iris"},
-		{[]string{"mir", "iris"}, "iris"},
-		{[]string{"fiber"}, "fiber"},
-		{[]string{"mir", "fiber"}, "fiber"},
-		{[]string{"httprouter"}, "httprouter"},
-		{[]string{"mir", "httprouter"}, "httprouter"},
-		{[]string{"tars"}, "tars"},
-		{[]string{"tars", "logrus"}, "tars/logrus"},
-		{[]string{"tars", "simple"}, "tars"},
-		{[]string{"tars", "simple", "logrus"}, "tars/logrus"},
-		{[]string{"tars", "mir"}, "tars/mir/gin"},
-		{[]string{"tars", "gin"}, "tars/mir/gin"},
-		{[]string{"tars", "mir", "gin"}, "tars/mir/gin/logrus"},
-		{[]string{"tars", "mir", "logrus"}, "tars/mir/gin/logrus"},
-		{[]string{"tars", "gin", "logrus"}, "tars/mir/gin/logrus"},
-		{[]string{"tars", "mir", "gin", "logrus"}, "tars/mir/gin/logrus"},
+		{ts{"zim"}, "grpc"},
+		{ts{"grpc"}, "grpc"},
+		{ts{"grpc", "zim"}, "grpc"},
+		{ts{"gin"}, "gin"},
+		{ts{"mir", "gin"}, "gin"},
+		{ts{"chi"}, "chi"},
+		{ts{"mir", "chi"}, "chi"},
+		{ts{"echo"}, "echo"},
+		{ts{"mir", "echo"}, "echo"},
+		{ts{"macaron"}, "macaron"},
+		{ts{"mir", "macaron"}, "macaron"},
+		{ts{"mux"}, "mux"},
+		{ts{"mir", "mux"}, "mux"},
+		{ts{"iris"}, "iris"},
+		{ts{"mir", "iris"}, "iris"},
+		{ts{"fiber"}, "fiber"},
+		{ts{"mir", "fiber"}, "fiber"},
+		{ts{"httprouter"}, "httprouter"},
+		{ts{"mir", "httprouter"}, "httprouter"},
+		{ts{"tars"}, "tars"},
+		{ts{"tars", "logrus"}, "tars/logrus"},
+		{ts{"tars", "simple"}, "tars"},
+		{ts{"tars", "simple", "logrus"}, "tars/logrus"},
+		{ts{"tars", "mir"}, "tars/mir/gin"},
+		{ts{"tars", "gin"}, "tars/mir/gin"},
+		{ts{"tars", "mir", "gin"}, "tars/mir/gin/logrus"},
+		{ts{"tars", "mir", "logrus"}, "tars/mir/gin/logrus"},
+		{ts{"tars", "gin", "logrus"}, "tars/mir/gin/logrus"},
+		{ts{"tars", "mir", "gin", "logrus"}, "tars/mir/gin/logrus"},
 	} {
-		sort.Strings(s.styles)
-		styles[strings.Join(s.styles, ":")] = s.target
+		styles[s.styles.String()] = s.target
 	}
+}
+
+func (s ts) String() string {
+	sort.Strings(s)
+	return strings.Join(s, ":")
 }
 
 func tmplInfosFrom(s []string) (tmplInfos, bool) {
