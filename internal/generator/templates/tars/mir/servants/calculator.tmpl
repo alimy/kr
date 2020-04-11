@@ -69,7 +69,7 @@ func (s *calculatorSrv) Sub(c *gin.Context) {
 // NewCalculator return a Calculator implement object
 func NewCalculator() api.Calculator {
 	comm := locator.MyCommunicator()
-	calObj := utils.ObjFrom("kry.calculator.CalculatorObj", "tcp -h 127.0.0.1 -p 10028 -t 60000")
+	calObj := utils.ObjFrom("kry.calculator.CalculatorObj")
 	calSrv := new(calculator.Calculator)
 	comm.StringToProxy(calObj, calSrv)
 

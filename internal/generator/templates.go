@@ -58,10 +58,15 @@ func init() {
 		{[]string{"httprouter"}, "httprouter"},
 		{[]string{"mir", "httprouter"}, "httprouter"},
 		{[]string{"tars"}, "tars"},
+		{[]string{"tars", "logrus"}, "tars/logrus"},
 		{[]string{"tars", "simple"}, "tars"},
+		{[]string{"tars", "simple", "logrus"}, "tars/logrus"},
 		{[]string{"tars", "mir"}, "tars/mir/gin"},
 		{[]string{"tars", "gin"}, "tars/mir/gin"},
-		{[]string{"tars", "mir", "gin"}, "tars/mir/gin"},
+		{[]string{"tars", "mir", "gin"}, "tars/mir/gin/logrus"},
+		{[]string{"tars", "mir", "logrus"}, "tars/mir/gin/logrus"},
+		{[]string{"tars", "gin", "logrus"}, "tars/mir/gin/logrus"},
+		{[]string{"tars", "mir", "gin", "logrus"}, "tars/mir/gin/logrus"},
 	} {
 		sort.Strings(s.styles)
 		styles[strings.Join(s.styles, ":")] = s.target

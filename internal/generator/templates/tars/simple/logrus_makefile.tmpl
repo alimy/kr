@@ -1,0 +1,114 @@
+APP       := kry
+TARGET    := calculator
+MFLAGS    :=
+DFLAGS    :=
+CONFIG    := calculator.conf
+STRIP_FLAG:= N
+#-------------------------------------------------------------------------------
+#fix cgo compile error
+export LC_ALL   = en_US.UTF-8
+export LANG     = en_US.UTF-8
+#-------------------------------------------------------------------------------
+GOPATH ?= $(shell go env GOPATH)
+GOROOT ?= $(shell go env GOROOT)
+GOFMT ?= gofmt -s -w
+GO      = ${GOROOT}/bin/go
+TAGS = pprof
+LDFLAGS += -X "{{ .PkgName }}/version.BuildTime=$(shell date -u '+%Y-%m-%d %I:%M:%S %Z')"
+LDFLAGS += -X "{{ .PkgName }}/version.GitHash=$(shell git rev-parse HEAD)"
+#-------------------------------------------------------------------------------
+libpath=${subst :, ,$(GOPATH)}
+TARS2GO     := $(firstword $(subst :, , $(shell go env GOPATH)))/bin/tars2go
+J2GO_FLAG   := -outdir=proto/gen
+#-------------------------------------------------------------------------------
+TARS_SRC     := $(wildcard proto/*.tars)
+GO_SRC      := $(wildcard *.go)
+GOFILES := $(shell find . -name "*.go" -type f)
+#----------------------------------------------------------------------------------
+copyfile = if test -z "$(APP)" || test -z "$(TARGET)"; then \
+               echo "['APP' or 'TARGET' option is empty.]"; exit 1; \
+           	else \
+		       	if test ! -d $(2); then \
+              		echo "[No such dir:$(2), now we create it.]";\
+    				mkdir -p $(2);\
+				fi; \
+         		echo "[Copy file $(1) -> $(2)]"; \
+         		cp -v $(1) $(2); \
+			fi;
+
+ALL: $(TARGET)
+#----------------------------------------------------------------------------------
+$(TARGET): gen-tars $(GO_SRC)
+	$(GO) build -ldflags '$(LDFLAGS)' $(GO_BUILD_FLAG) -o $@
+#----------------------------------------------------------------------------------
+pprof: gen-tars $(GO_SRC)
+	$(GO) build -ldflags '$(LDFLAGS)' -tags '$(TAGS)' $(GO_BUILD_FLAG) -o $(TARGET)
+#----------------------------------------------------------------------------------
+serve: gen-tars $(GO_SRC)
+	$(GO) run -ldflags '$(LDFLAGS)' $(GO_BUILD_FLAG) main.go --config=calculator.conf
+#----------------------------------------------------------------------------------
+serve-pprof: gen-tars $(GO_SRC)
+	$(GO) run -ldflags '$(LDFLAGS)' -tags '$(TAGS)' $(GO_BUILD_FLAG) main.go --config=calculator.conf
+#----------------------------------------------------------------------------------
+client: gen-tars $(GO_SRC)
+	$(GO) run -ldflags '$(LDFLAGS)' internal/client/client.go --config=calculator.conf
+#----------------------------------------------------------------------------------
+.PHONY: gen-tars
+gen-tars: $(TARS_SRC)
+	$(TARS2GO) $(J2GO_FLAG) $(TARS_SRC)
+#----------------------------------------------------------------------------------
+.PHONY: linux-amd64
+linux-amd64: gen-tars $(GO_SRC)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -ldflags '$(LDFLAGS)' $(GO_BUILD_FLAG) -o $(TARGET)
+#----------------------------------------------------------------------------------
+.PHONY: release
+release: linux-amd64 $(CONFIG)
+	@if [ -d release/$(TARGET)_tmp_dir ]; then \
+		echo "dir has exist:$(TARGET)_tmp_dir, abort."; \
+		exit 1; \
+	else \
+		mkdir -p release/$(TARGET)_tmp_dir/$(TARGET);\
+		cp -rf $(TARGET) $(CONFIG) release/$(TARGET)_tmp_dir/$(TARGET)/; \
+		cd release/$(TARGET)_tmp_dir; tar --exclude=".svn" --exclude="_svn" -czvf $(TARGET).tgz $(TARGET)/; cd ..; \
+		if [ -f "$(TARGET).tgz" ]; then \
+			mv -vf $(TARGET).tgz $(TARGET).`date +%Y%m%d%H%M%S`.tgz; \
+		fi; \
+		mv $(TARGET)_tmp_dir/$(TARGET).tgz ./; \
+		rm -rf $(TARGET)_tmp_dir; \
+		cd ..; \
+		echo "tar cvfz $(TARGET).tgz ..."; \
+	fi
+
+HELP += $(HELP_TAR)
+
+ifneq ($(TARS_SRC),)
+
+SERVER_NAME := $(TARGET)
+
+endif
+#----------------------------------------------------------------------------------
+.PHONY: test
+test: fmt
+	go test ./...
+#----------------------------------------------------------------------------------
+.PHONY: fmt
+fmt:
+	$(GOFMT) $(GOFILES)
+#----------------------------------------------------------------------------------
+clean:
+	rm -vf $(DEPEND_TARS_OBJ) $(INVOKE_DEPEND_TARS_OBJ) $(LOCAL_OBJ) $(TARGET) $(TARGETS) $(DEP_FILE) ${CLEANFILE} .*.d.tmp gmon.out
+	rm -vf release/*$(TARGET)*.tgz
+#----------------------------------------------------------------------------------
+cleanall:
+	rm -vf $(DEPEND_TARS_H) $(DEPEND_TARS_CPP) $(DEPEND_TARS_OBJ) $(LOCAL_OBJ) $(HCE_H) $(HCE_CPP) $(TARGET) $(TARGETS) $(DEP_FILE) ${CLEANFILE} *.o .*.d.tmp .*.d gmon.out
+	rm -vrf release
+#----------------------------------------------------------------------------------
+HELP += $(HELP_CLEAN)
+HELP += $(HELP_CLEANALL)
+
+HELP_CLEAN    = "\n\e[1;33mclean\e[0m:\t\t[remove $(LOCAL_OBJ) $(TARGET)]"
+HELP_CLEANALL = "\n\e[1;33mcleanall\e[0m:\t[clean & rm .*.d]"
+HELP_TAR      = "\n\e[1;33mtar\e[0m:\t\t[will do 'tar $(TARGET).tgz $(RELEASE_FILE)']"
+
+help:
+	@echo -e $(HELP)"\n"
