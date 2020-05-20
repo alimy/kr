@@ -11,6 +11,8 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+*.swp
+
 # Goland project files
 .idea/
 *.iml
@@ -31,3 +33,4 @@
 /tarsmir
 /tarsgin
 /release/*
+/Ignitefile

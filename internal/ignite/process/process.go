@@ -2,7 +2,7 @@
 // Use of this source code is governed by Apache License 2.0 that
 // can be found in the LICENSE file.
 
-package vmware
+package process
 
 import (
 	"errors"
@@ -11,15 +11,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type cmdInfo struct {
-	describe string
-	cmd      string
-	argv     []string
+type ExecRun struct {
+	Describe string
+	Cmd      string
+	Argv     []string
 }
 
-func runCmd(ci *cmdInfo) error {
-	logrus.Info(ci.describe)
-	process, err := os.StartProcess(ci.cmd, ci.argv, nil)
+func (r *ExecRun) Run() error {
+	logrus.Info(r.Describe)
+	attr := &os.ProcAttr{}
+	if homedir, err := os.UserHomeDir(); err == nil {
+		attr.Dir = homedir
+	}
+	process, err := os.StartProcess(r.Cmd, r.Argv, attr)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,149 @@
+version = "1"
+
+staging {
+  fallback = false
+  default-provider = "vmware-fusion"
+}
+
+provider "vmware-fusion" {
+  description = "vmware fusion provider"
+  rootdir = "/Applications/VMware Fusion.app"
+  features {
+    display = "nogui"
+    state = "hard"
+  }
+}
+
+unit "mysql-router" {
+  description = "mysql router."
+  provider = "vmware-fusion"
+  path = "~/Apple/var/VMware/CentOS 8 x64/mysql-router.vmwarevm/mysql-router.vmx"
+  hosts = [
+    "192.168.117.141"]
+}
+
+unit "mysql-master" {
+  description = "mysql master."
+  provider = "vmware-fusion"
+  path = "~/Apple/var/VMware/CentOS 8 x64/mysql-master.vmwarevm/mysql-master.vmx"
+  hosts = [
+    "192.168.117.138"]
+}
+
+unit "mysql-node-1" {
+  description = "mysql node 1."
+  provider = "vmware-fusion"
+  path = "~/Apple/var/VMware/CentOS 8 x64/mysql-node-1.vmwarevm/mysql-node-1.vmx"
+  hosts = [
+    "192.168.117.139"]
+}
+
+unit "mysql-node-2" {
+  description = "mysql node 2."
+  provider = "vmware-fusion"
+  path = "~/Apple/var/VMware/CentOS 8 x64/mysql-node-2.vmwarevm/mysql-node-2.vmx"
+  hosts = [
+    "192.168.117.140"]
+}
+
+unit "k8s-registry" {
+  description = "docker registry."
+  path = "~/Apple/var/VMware/k8s-focal/k8s-registry.vmwarevm/k8s-registr.vmx"
+  hosts = [
+    "192.168.117.142",
+    "172.16.258.38"]
+}
+
+unit "k8s-master-1" {
+  description = "kubernete master 1."
+  path = "~/Apple/var/VMware/k8s-focal/k8s-master-1.vmwarevm/k8s-master-1.vmx"
+  hosts = [
+    "192.168.117.143",
+    "172.16.258.39"]
+}
+
+unit "k8s-master-2" {
+  description = "kubernete master 2."
+  path = "~/Apple/var/VMware/k8s-focal/k8s-master-2.vmwarevm/k8s-master-2.vmx"
+  hosts = [
+    "192.168.117.144",
+    "172.16.258.40"]
+}
+
+unit "k8s-master-3" {
+  description = "kubernete master 3."
+  path = "~/Apple/var/VMware/k8s-focal/k8s-master-3.vmwarevm/k8s-master-3.vmx"
+  hosts = [
+    "192.168.117.145",
+    "172.16.258.41"]
+}
+
+unit "k8s-node-1" {
+  description = "kubernete node 1."
+  path = "~/Apple/var/VMware/k8s-focal/k8s-node-1.vmwarevm/k8s-node-1.vmx"
+  hosts = [
+    "192.168.117.146",
+    "172.16.258.42"]
+}
+
+unit "k8s-node-2" {
+  description = "kubernete node 2."
+  path = "~/Apple/var/VMware/k8s-focal/k8s-node-2.vmwarevm/k8s-node-2.vmx"
+  hosts = [
+    "192.168.117.147",
+    "172.16.258.43"]
+}
+
+unit "k8s-node-3" {
+  description = "kubernete node 3."
+  path = "~/Apple/var/VMware/k8s-focal/k8s-node-3.vmwarevm/k8s-node-3.vmx"
+  hosts = [
+    "192.168.117.148",
+    "172.16.258.44"]
+}
+
+workspace "mysql-cluster" {
+  description = "mysql innodb cluster deployed in CentOS 8."
+  tier "mysql-master" {}
+  tier "mysql-node-1" {
+    dependencies = [
+      "mysql-master"]
+  }
+  tier "mysql-node-2" {
+    dependencies = [
+      "mysql-master"]
+  }
+  tier "mysql-router" {
+    dependencies = [
+      "mysql-master",
+      "mysql-node-1",
+      "mysql-node-2"]
+  }
+}
+
+workspace "k8s-focal" {
+  description = "kubernetes deployed in ubuntu focal fossa."
+  tiers = [
+    "k8s-registry",
+    "k8s-master-1",
+    "k8s-master-2",
+    "k8s-master-3"]
+  tier "k8s-node-1" {
+    dependencies = [
+      "k8s-master-1",
+      "k8s-master-2",
+      "k8s-master-3"]
+  }
+  tier "k8s-node-2" {
+    dependencies = [
+      "k8s-master-1",
+      "k8s-master-2",
+      "k8s-master-3"]
+  }
+  tier "k8s-node-3" {
+    dependencies = [
+      "k8s-master-1",
+      "k8s-master-2",
+      "k8s-master-3"]
+  }
+}
